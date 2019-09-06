@@ -5,6 +5,8 @@ python:
 
 install:
   - pip install -r requirements.txt
+  - sudo docker-compose up --build
+  - sleep 10
 
 script:
   - pytest
