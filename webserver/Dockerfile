@@ -1,6 +1,9 @@
-FROM nginx
+FROM nginx:latest
 
 COPY hello.html /usr/share/nginx/html
-COPY default.conf /etc/nginx/conf.d/
+COPY default.conf /etc/nginx/
 
-EXPOSE 80
+COPY nginx.crt /etc/ssl/
+COPY nginx.key /etc/ssl
+
+EXPOSE 443
