@@ -5,3 +5,7 @@ services:
     build: ./webserver/
     ports:
       - "8080:80"
+  flask:
+    biuld: ./app/
+    ports:
+      - "5000:5000"
