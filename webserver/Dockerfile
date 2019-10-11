@@ -1,5 +1,5 @@
-FROM httpd
+FROM nginx
 
-COPY index.html /usr/local/apache2/htdocs/
+COPY index.html /usr/share/nginx/html
 
 EXPOSE 80
