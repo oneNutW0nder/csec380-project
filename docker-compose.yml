@@ -2,8 +2,11 @@ version: "3"
 
 services:
   webserver:
-    build: ./webserver/
+    build: ./nginx/
     ports:
-      - "8080:443"
+      - "80:80"
+      - "443:443"
   flask:
     build: ./app/
+    ports:
+      - "5000:5000"
