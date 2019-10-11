@@ -14,3 +14,6 @@ notifications:
   slack:
     rooms:
       secure: NGcko38hKeHx3acP6Z9/rI+P6eVuKKuWjVIQyKi2eylS4DOAixYApVr0FMM0OIgbSlCFvBmrYhhXBEn1o09ZjfT86dRirUV4Chycza0yIYL5xPVtqCbeOwRmDoBXDk4xmLMICmY7Arl3mScLh35RH6uMBDtmE3lom6GFwYOBJZXdI4T3rycU2S5yBtl3iEjxLUinHQ5K7bAcE5s4w/XVk1ubASDS9hj1vCH5MwmqiIpxN5mPCAId+6XYOKHn4BtxRNjdCVKJbMr4XaTgYLUFAHMcu1Mz+cm0eEu7wkOw/STmfmfAXynUkU3owGqmOhAopFjPN08AyK48bRJN/0A5KJFjj0iL5FssbUjU36YWK6EIe+6krCiOhgf6SzOgRBgyo9hb4B2y7M0QRaDR7o5wuEBagGdxovM1cxU40qZxpM8TXg2RKAmUB9Jz5zdxIsQkqecW/MKu3AZVN38L55SlxOTKIdfbZjeWoZy5Ef1ggywZThrKaO0XCl1z62NmHp8FhTKgDPz2HnQ/EpkcZSbKCDJmikbF+lDyFu9Hg7uDFHdMSc9QLdRPh6IRrG7g8kT3QV5IkMm1COF0OQ2LRkLQBYZI8HKU0fbq6ftYyZdjdEld6MMMkGzbaYl5q1V3ThS/hNMXyFKvJYj0vRhqWXO/ReSVFri6rNikr74vPfBm1YY=
+    template:
+      - "%{repository_slug} (%{commit}) : %{message}"
+      - "Build details: %{build_url}"
