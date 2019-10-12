@@ -19,5 +19,4 @@ ADD . /app/
 EXPOSE 5000
 
 # Run the flask app with certs
-CMD flask run --host 0.0.0.0 
-#--cert=cert.pem --key=key.pem
+CMD flask run --host 0.0.0.0
