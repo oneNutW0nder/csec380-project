@@ -4,7 +4,7 @@ The "current_app" value references the current application context
 that was created in __init__.py
 """
 
-from flask import render_template, current_app, request, redirect
+from flask import render_template, current_app, request, redirect, make_response
 from . import loginmanager, db
 from application.models import User
 from datetime import datetime, timedelta
@@ -32,26 +32,66 @@ def root():
     # Check if the user is logged in with valid session
     # if not logged in redirect to /login
     if request.method == "GET":
-        return render_template("index.html")
+        user = auth_user_session()
+        if user:
+            return render_template("index.html")
+        else:
+            return redirect("/login")
 
 
 @current_app.route("/login", methods=["GET", "POST"])
 def login():
-    # First check for method type
-    # If GET --> check for valid session and redirect to homepage "/"
-    # If POST --> grab user entered data and check database for existing user
+    """
+    Hanldes the logic of loggin a user in. If the method is GET the
+    user will have their session check and forwarded to the homepage
+    if they have a valid session, otherwise they will be displayed the
+    login page. If the method is POST the user's information will be
+    validate and then logged in if the requirements are met.
+    """
+
     if request.method == "GET":
-        return render_template("login.html")
+        # Check if the user is auth'd
+        user = auth_user_session()
+        if user:
+            # Send to homepage if they are auth'd
+            return redirect("/")
+        else:
+            # Otherwise send back to login
+            return render_template("login.html")
 
     if request.method == "POST":
+        # Get values submitted through POST
         username = request.form["username"]
         password = request.form["password"]
 
-        return username, password
+        # Find the user in the database
+        user = User.query.filter(User.username == username).first()
+        if user:
+            if user.check_password(password):
+                # Update their cookie and commit
+                cookie = update_session(user)
+                db.session.add(user)
+                db.session.commit()
+
+                # Send cookie back in response
+                response = make_response(redirect("/"))
+                response.set_cookie("session_cookie", cookie)
+                response.set_cookie("user", f"{user.id}")
+
+                # Return
+                return response
+            return "Failed password check"
+        return "User is none"
 
 
 @current_app.route("/register", methods=["GET", "POST"])
 def register():
+    """
+    Handles the registration of a new user. A GET request will
+    serve the html that includes the form for registration.
+    A POST request with the proper parameters will
+    register the user and add their info to the database.
+    """
 
     if request.method == "GET":
         return render_template("register.html")
@@ -63,10 +103,11 @@ def register():
 
         if password == confirmpassword:
             # Continue registering
+            # TODO: ADD CHECK FOR EXISTING USER
             user = User(username, password)
             db.session.add(user)
             db.session.commit()
-            return redirect("/login")
+            return render_template("registersuccess.html")
         else:
             # Failure of passwords matching
             return render_template("registererror.html")
@@ -80,7 +121,7 @@ def auth_user_session():
     :return: Returns the user object if they are auth'd
     """
     if "user" in request.cookies:
-        userid = request.cookie["user"]
+        userid = request.cookies["user"]
         if userid:
             user = User.query.filter(User.id == userid).first()
             if user:
@@ -114,6 +155,7 @@ def update_session(user):
     Used to update a user's session at login
 
     :param user: The user whose session to update
+    :return: Returns the cookie that was created
     """
 
     # Setup/update cookie
@@ -123,3 +165,6 @@ def update_session(user):
     # Commit
     db.session.add(user)
     db.session.commit()
+
+    cookie = user.cookie
+    return cookie
