@@ -7,6 +7,8 @@ that was created in __init__.py
 from flask import render_template, current_app, request, redirect
 from . import loginmanager, db
 from application.models import User
+from datetime import datetime, timedelta
+from secrets import token_urlsafe
 
 
 @loginmanager.user_loader
@@ -20,8 +22,7 @@ def load_user():
 
 @current_app.route("/hello", methods=["GET"])
 def hello():
-    """
-    This route is for a hello world test
+    """ This route is for a hello world test
     """
     return render_template("hello.html")
 
@@ -65,6 +66,60 @@ def register():
             user = User(username, password)
             db.session.add(user)
             db.session.commit()
+            return redirect("/login")
         else:
             # Failure of passwords matching
             return render_template("registererror.html")
+
+
+def auth_user_session():
+    """
+    Makes sure a user is authenticated. Will be used to verify auth
+    to access certain resources
+
+    :return: Returns the user object if they are auth'd
+    """
+    if "user" in request.cookies:
+        userid = request.cookie["user"]
+        if userid:
+            user = User.query.filter(User.id == userid).first()
+            if user:
+                if "session_cookie" in request.cookies and user.cookie == request.cookies["session_cookie"]:
+                    if user.cookie_expiration > datetime.now():
+                        return user
+
+    # Return none if failure
+    return None
+
+
+def kill_session(user):
+    """
+    This kills a user's session by removing the cookie and updating the
+    expiration to the current time. Used for logging out
+
+    :param user: The user whose session to kill
+    """
+
+    # Destroy cookie
+    user.cookie = None
+    user.cookie_expiration = datetime.now()
+
+    # Commit
+    db.session.add(user)
+    db.session.commit()
+
+
+def update_session(user):
+    """
+    Used to update a user's session at login
+
+    :param user: The user whose session to update
+    """
+
+    # Setup/update cookie
+    user.cookie = token_urlsafe(64)
+    user.cookie_expiration = datetime.now() + timedelta(hours=2)
+
+    # Commit
+    db.session.add(user)
+    db.session.commit()
