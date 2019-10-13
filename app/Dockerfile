@@ -3,6 +3,7 @@ FROM python:3.7.1
 # Set env vars
 ENV FLASK_APP "application/"
 ENV FLASK_ENV "development"
+ENV DATABASE_URI "mysql+pymysql://root:root-password@database:3306/firewagon"
 
 # Setup files
 RUN mkdir /app
