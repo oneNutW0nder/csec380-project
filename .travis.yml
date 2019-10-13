@@ -6,7 +6,7 @@ python:
 before_install:
 - pip install -r requirements.txt
 - sudo docker-compose up --build -d
-- sleep 30
+- sleep 60
 
 script:
 - pytest
