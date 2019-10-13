@@ -113,6 +113,19 @@ def register():
             return render_template("registererror.html")
 
 
+@current_app.route("/logout", methods=["GET", "POST"])
+def logout():
+    if request.method == "GET":
+        user = auth_user_session()
+        if user:
+            return render_template("logout.html")
+    if request.method == "POST":
+        user = auth_user_session()
+        if user:
+            kill_session(user)
+        return redirect("/login")
+
+
 def auth_user_session():
     """
     Makes sure a user is authenticated. Will be used to verify auth
