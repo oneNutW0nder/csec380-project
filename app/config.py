@@ -2,6 +2,7 @@
 This is the Flask Config class. It sets configuration settings for
 our current app context defined in ./application/__init__.py
 """
+import os
 
 
 class Config:
@@ -10,3 +11,4 @@ class Config:
     TESTING = True
     DEBUG = True
     SECRET_KEY = "dev"
+    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']
