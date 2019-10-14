@@ -19,7 +19,9 @@ services:
       - database
   database:
     image: mariadb
-    restart: always
+    ports:
+      - "3360:3360"
+    restart: on-failure
     environment:
       - MYSQL_ROOT_PASSWORD=root-password
       - MYSQL_DATABASE=firewagon
