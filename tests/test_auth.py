@@ -29,7 +29,7 @@ def bad_passlogin():
     """
     test a bad login with only bad password
     """
-    resp = requests.post("https://localhost/login", data={"username": "test_user", "password": "test_password"}, verify=False)
+    resp = requests.post("https://localhost/login", data={"username": "test_user", "password": "sadflkj"}, verify=False)
 
     if "Invalid" in resp.text:
         return True
