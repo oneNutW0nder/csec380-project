@@ -11,4 +11,4 @@ class Config:
     TESTING = True
     DEBUG = True
     SECRET_KEY = "dev"
-    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']
+    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']

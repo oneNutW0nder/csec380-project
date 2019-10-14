@@ -13,6 +13,8 @@ services:
   flask:
     build: ./app/
     restart: on-failure
+    ports:
+      - "5000:5000"
     links:
       - database
     depends_on:
@@ -20,7 +22,7 @@ services:
   database:
     image: mariadb
     ports:
-      - "3360:3360"
+      - "3306:3306"
     restart: on-failure
     environment:
       - MYSQL_ROOT_PASSWORD=root-password
