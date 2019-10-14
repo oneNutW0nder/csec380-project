@@ -22,7 +22,8 @@ def load_user():
 
 @current_app.route("/hello", methods=["GET"])
 def hello():
-    """ This route is for a hello world test
+    """
+    This route is for a hello world test
     """
     return render_template("hello.html")
 
@@ -80,8 +81,7 @@ def login():
 
                 # Return
                 return response
-            return "Failed password check"
-        return "User is none"
+        return render_template("loginfailure.html")
 
 
 @current_app.route("/register", methods=["GET", "POST"])
