@@ -2,6 +2,6 @@ import requests
 
 
 def test_helloWorld():
-    response = requests.get("http://localhost:80")
+    response = requests.get("http://localhost/", verify=False)
 
-    assert "Hello World -- pytesting" in response.text
+    assert "Login" in response.text
