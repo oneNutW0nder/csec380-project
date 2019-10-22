@@ -37,10 +37,23 @@ def bad_passlogin():
         return False
 
 
+def create_user():
+    """
+    Create a test user
+    """
+    resp = requests.post("https://localhost/register", data={"username": "test_user", "password": "test_password", "confirmpassword": "test_password"}, verify=False)
+
+    if "successfully" in resp.text:
+        return True
+    else:
+        return False
+
+
 def test_run_all():
     """
     run all the tests for this section
     """
+    assert create_user()
     assert valid_login()
     assert bad_userlogin()
     assert bad_passlogin()
