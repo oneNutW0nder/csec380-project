@@ -53,7 +53,7 @@ def test_run_all():
     """
     run all the tests for this section
     """
-    assert create_user()
+    create_user()
     assert valid_login()
     assert bad_userlogin()
     assert bad_passlogin()
