@@ -111,8 +111,8 @@ class Video(UserMixin, db.Model):
     __tablename__ = "video"
 
     # Define the values in the table
-    id = db.Column(db.Integer, primary_key=True, index=True, autoincrememnt=True)
-    user_id = db.Column(db.ForeignKey("user.id"), index=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = db.Column(db.ForeignKey("users.id"), index=True, nullable=False)
     video_title = db.Column(db.String(255), index=True, unique=False, nullable=False)
     video_loc = db.Column(db.String(255), index=True, unique=True, nullable=False)
     upload_time = db.Column(db.DateTime, index=True, nullable=False)
