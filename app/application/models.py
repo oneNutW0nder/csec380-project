@@ -102,3 +102,30 @@ class User(UserMixin, db.Model):
         """
 
         return False
+
+
+class Video(UserMixin, db.Model):
+    """
+    Defines the model for videos that are uploaded
+    """
+    __tablename__ = "video"
+
+    # Define the values in the table
+    id = db.Column(db.Integer, primary_key=True, index=True, autoincrememnt=True)
+    user_id = db.Column(db.ForeignKey("user.id"), index=True, nullable=False)
+    video_title = db.Column(db.String(255), index=True, unique=False, nullable=False)
+    video_loc = db.Column(db.String(255), index=True, unique=True, nullable=False)
+    upload_time = db.Column(db.DateTime, index=True, nullable=False)
+
+    def __init__(self, user, video_title, video_loc):
+        """
+        Make the instance of a video and set vars
+
+        :param user: a user object
+        :param video_title: string of the video title
+        :param video_loc: string for the path of the video to be save
+        """
+        self.user_id = user.id
+        self.video_title = video_title
+        self.video_loc = video_loc
+        self.upload_time = datetime.now()
