@@ -6,22 +6,28 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    depends_on:
+      - flask
     links:
       - flask
   flask:
     build: ./app/
-    restart: on-failure
-    links:
-      - database
+    volumes:
+      - ./app/container_files:/opt/src/app:Z
+    ports:
+      - "5000:5000"
+    environment:
+      - "DATABASE_URL=mysql+pymysql://root:root-password@database:3306/firewagon"
+      - "FLASK_APP=application/"
+      - "FLASK_ENV=development"
+      - "FLASK_RUN_HOST=0.0.0.0"
     depends_on:
       - database
-  database:
-    image: mariadb
-    ports:
-      - "3306:3306"
+    links:
+      - database
     restart: on-failure
+  database:
+    image: mysql:5.6
     environment:
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root-password
       - MYSQL_ROOT_PASSWORD=root-password
       - MYSQL_DATABASE=firewagon
