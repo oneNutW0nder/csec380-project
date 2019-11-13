@@ -16,9 +16,9 @@ def create_app():
 
     # Setup and configure our app from ../config.py
     app = Flask(__name__, instance_relative_config=False)
+    app.config.from_object("config.Config")
     db.init_app(app)
     loginmanager.init_app(app)
-    app.config.from_object("config.Config")
 
     # This creates the current app context and returns it
     with app.app_context():
