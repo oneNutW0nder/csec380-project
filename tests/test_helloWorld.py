@@ -2,6 +2,6 @@ import requests
 
 
 def test_helloWorld():
-    response = requests.get("http://127.0.0.1/", verify=False)
+    response = requests.get("http://localhost/", verify=False)
 
     assert "Login" in response.text
