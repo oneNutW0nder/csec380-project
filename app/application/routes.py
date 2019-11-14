@@ -281,16 +281,20 @@ def register():
         password = request.form["password"]
         confirmpassword = request.form["confirmpassword"]
 
-        if password == confirmpassword:
-            # Continue registering
-            # TODO: ADD CHECK FOR EXISTING USER
-            user = User(username, password)
-            db.session.add(user)
-            db.session.commit()
-            return render_template("registersuccess.html")
-        else:
-            # Failure of passwords matching
-            return render_template("registererror.html")
+        if (username is not None) and (password is not None) and (confirmpassword is not None):
+            if password == confirmpassword:
+                # Continue registering
+                # TODO: ADD CHECK FOR EXISTING USER
+                user = User(username, password)
+                db.session.add(user)
+                db.session.commit()
+                return render_template("registersuccess.html")
+            else:
+                # Failure of passwords matching
+                return render_template("registererror.html")
+
+    flash("Error! Try again.")
+    return render_template("registererror.html")
 
 
 @current_app.route("/logout", methods=["GET", "POST"])
