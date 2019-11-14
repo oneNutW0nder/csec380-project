@@ -3,12 +3,21 @@ This file defines the routes that will be served by our Flask app
 The "current_app" value references the current application context
 that was created in __init__.py
 """
+import os
 
-from flask import render_template, current_app, request, redirect, make_response
+from flask import render_template, current_app, request, redirect, make_response, flash
 from . import loginmanager, db
 from application.models import User
+from application.models import Video
 from datetime import datetime, timedelta
 from secrets import token_urlsafe
+from werkzeug.utils import secure_filename
+
+# Setup vars for video uploads
+EXTENSIONS = {"mp4", "flv"}
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+UPLOADS = os.path.join(BASE_DIR, "static", "uploads")
+current_app.config["UPLOAD_FOLDER"] = UPLOADS
 
 
 @loginmanager.user_loader
@@ -47,7 +56,7 @@ def login():
     user will have their session check and forwarded to the homepage
     if they have a valid session, otherwise they will be displayed the
     login page. If the method is POST the user's information will be
-    validate and then logged in if the requirements are met.
+    validated and then logged in if the requirements are met.
     """
 
     if request.method == "GET":
@@ -82,6 +91,67 @@ def login():
                 # Return
                 return response
         return render_template("loginfailure.html")
+
+
+@current_app.route("/upload", methods=["GET", "POST"])
+def upload():
+    """
+    Handles the logic for uploading vidoes. GET methods will just
+    return the 'upload.html' template for the user if they are auth'd.
+    POST methods will take the informaiton (video) and eitehr download it
+    if a linke was provided or save it if the file was provided.
+    """
+
+    if request.method == "GET":
+        # Check to see the user is auth'd
+        user = auth_user_session()
+        if user:
+            # Render the upload template
+            return render_template("upload.html")
+        else:
+            # User is not auth'd yet, have them login
+            return redirect("/login")
+
+    elif request.method == "POST":
+        # handle upload logic
+        user = auth_user_session()
+
+        if user is not None:
+            # Check for a file
+            if "file" not in request.files:
+                flash("No file found")
+                return render_template("uploaderror.html")
+
+            # File is in the request
+            file = request.files["file"]
+
+            if file.filename == "":
+                # No filename
+                flash("Invalid filename")
+                return render_template("uploaderror.html")
+
+            if file and allowed_filetype(file.filename):
+                # Parse/generate filenames
+                filename = secure_filename(file.filename)
+                title = filename.rsplit(".", 1)[0]
+                unique = unique_filename(filename)
+
+                # Save the file locally
+                file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], unique_filename))
+
+                # Make a video object
+                vid_obj = Video(user, title, unique)
+
+                # Add and commit the new video object to the db
+                db.session.add(vid_obj)
+                db.session.commit()
+
+                # Success!
+                flash("File upload successful!")
+                return redirect("/")
+
+    # If everything else fails send them to login
+    return redirect("/login")
 
 
 @current_app.route("/register", methods=["GET", "POST"])
@@ -181,3 +251,26 @@ def update_session(user):
 
     cookie = user.cookie
     return cookie
+
+
+def allowed_filetype(filename):
+    """
+    Checks filetype by extension on the filename
+
+    :param filename: Filename with extension
+    :return: True if extension is supported; false if not
+    """
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in EXTENSIONS
+
+
+def unique_filename(filename):
+    """
+    Creates a unique filename using the given filename and the current date
+
+    :param filename: The string filename to make unique
+    :return: returns a unique filename
+    """
+
+    filename_array = '.' in filename and filename.rsplit('.', 1)
+    time = str(datetime.now().timestamp()).rsplit('.', 1)[0]
+    return filename_array[0] + '-' + time + '.' + filename_array[1]
