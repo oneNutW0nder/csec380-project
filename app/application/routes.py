@@ -4,6 +4,7 @@ The "current_app" value references the current application context
 that was created in __init__.py
 """
 import os
+import urllib.request
 
 from flask import render_template, current_app, request, redirect, make_response, flash
 from . import loginmanager, db
@@ -119,7 +120,6 @@ def upload():
         if user is not None:
             # Check for a file
             if "file" not in request.files:
-                flash("No file found")
                 return render_template("uploaderror.html")
 
             # File is in the request
@@ -127,7 +127,6 @@ def upload():
 
             if file.filename == "":
                 # No filename
-                flash("Invalid filename")
                 return render_template("uploaderror.html")
 
             if file and allowed_filetype(file.filename):
@@ -147,12 +146,75 @@ def upload():
                 db.session.commit()
 
                 # Success!
-                flash("File upload successful!")
-                return redirect("/")
+                return render_template("uploadsuccess.html")
 
     # If everything else fails send them to login
     return redirect("/login")
 
+
+@current_app.route('/download', methods=['POST', 'GET'])
+def download_file():
+    """
+    This function handles downloading a video from an external server
+    given a link from the user
+    """
+
+    if request.method == 'POST':
+        # Check user session
+        user = auth_user_session()
+        if user is not None:
+            # Check for filename
+            if 'filename' not in request.form:
+                return render_template("uploaderror.html")
+
+            filename = request.form['filename']
+
+            # Check for no filename
+            if filename == '':
+                return render_template("uploaderror.html")
+
+            # Check for url in form
+            if 'url' not in request.form:
+                return render_template("uploaderror.html")
+
+            url = request.form['url']
+
+            # Check for blank url
+            if 'url' == '':
+                return render_template("uploaderror.html")
+
+            # Check valid filetype
+            if not allowed_filetype(filename):
+                return render_template("uploaderror.html")
+
+            # Create filename
+            filename = secure_filename(filename)
+            title = filename.rsplit('.', 1)[0]
+            unique_name = unique_filename(filename)
+
+            # Try to download the file from url
+            try:
+                full_path = os.path.join(BASE_DIR, 'static', 'uploads', unique_name)
+                urllib.request.urlretrieve(url, filename=full_path)
+            except Exception as e:
+                print(e)
+                return redirect("/")
+
+            # Add video metadata to the database
+            video_obj = Video(user, title, unique_name)
+            db.session.add(video_obj)
+            db.session.commit()
+
+            return redirect("/")
+
+    # Get request send to upload template page
+    elif request.method == "GET":
+        user = auth_user_session()
+        if user is not None:
+            return redirect("/upload")
+
+    # All else fails send to login
+    return redirect("/login")
 
 @current_app.route("/register", methods=["GET", "POST"])
 def register():
