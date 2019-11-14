@@ -137,7 +137,7 @@ def upload():
                 unique = unique_filename(filename)
 
                 # Save the file locally
-                file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], unique))
+                file.save(os.path.join(current_app.root_path, "static", "uploads", unique))
 
                 # Make a video object
                 vid_obj = Video(user, title, unique)
@@ -191,18 +191,18 @@ def download_file():
             # Create filename
             filename = secure_filename(filename)
             title = filename.rsplit('.', 1)[0]
-            unique_name = unique_filename(filename)
+            unique = unique_filename(filename)
 
             # Try to download the file from url
             try:
-                full_path = os.path.join(BASE_DIR, 'static', 'uploads', unique_name)
+                full_path = os.path.join(current_app.root_path, 'static', 'uploads', unique)
                 urllib.request.urlretrieve(url, filename=full_path)
             except Exception as e:
                 print(e)
                 return redirect("/")
 
             # Add video metadata to the database
-            video_obj = Video(user, title, unique_name)
+            video_obj = Video(user, title, unique)
             db.session.add(video_obj)
             db.session.commit()
 
@@ -216,6 +216,53 @@ def download_file():
 
     # All else fails send to login
     return redirect("/login")
+
+
+@current_app.route('/playback/<video>', methods=['GET', 'POST'])
+def playback(video):
+    """
+    GET method will allow you to watch the movie request. POST method
+    will check to see if you own the video in which case you will delete
+    the selected video.
+
+    :param video: A video id
+    """
+    # Auth the user
+    user = auth_user_session()
+    if user is not None:
+        # Get the video obj
+        video_obj = Video.query.filter(Video.id == video).first()
+
+        # Error checking
+        if video_obj is None:
+            flash("Video was not found. Contact your administrator")
+            return redirect("/")
+
+        if request.method == 'POST':
+            # Check to see if the user owns the video
+            if video_obj.user_id == int(request.cookies['user']):
+                # If they own it, delete it from DB
+                db.session.delete(video_obj)
+                db.session.commit()
+
+                # Remove the file from disk
+                os.remove(os.path.join(current_app.root_path, "static", "uploads", video_obj.video_loc))
+
+                # Inform user and redirect
+                flash("The video has been deleted")
+                return redirect("/")
+            else:
+                # Send to watch the video
+                flash("You do not own this video!")
+                return render_template('watch.html', video=video_obj, user=int(request.cookies['user']))
+
+        # Play the video 
+        elif request.method == 'GET':
+            return render_template('watch.html', video=video_obj, user=int(request.cookies['user']))
+
+    # All else fails send to login
+    return redirect("/login")
+
 
 @current_app.route("/register", methods=["GET", "POST"])
 def register():
