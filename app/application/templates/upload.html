@@ -5,14 +5,14 @@
     <h1>Upload a video here!</h1>
 
     <p>Upload with a URL:</p>
-    <form method=post>
+    <form method=post action=/download>
         <input type=text placeholder="Filename" name=filename>
         <input type=text placeholder="URL" name=url>
         <input type=submit value=Download>
     </form>
 
     <p>Upload with a file:</p>
-    <form method=post enctype="multipart/form-data">
+    <form method=post action=/upload enctype="multipart/form-data">
         <input type=file name=file>
         <input type=submit value=Upload>
     </form>
