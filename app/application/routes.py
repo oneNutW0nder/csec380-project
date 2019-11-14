@@ -45,7 +45,8 @@ def root():
     if request.method == "GET":
         user = auth_user_session()
         if user:
-            return render_template("index.html")
+            videos = Video.query.all()
+            return render_template("index.html", videos=videos)
         else:
             return redirect("/login")
 
@@ -136,7 +137,7 @@ def upload():
                 unique = unique_filename(filename)
 
                 # Save the file locally
-                file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], unique_filename))
+                file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], unique))
 
                 # Make a video object
                 vid_obj = Video(user, title, unique)
