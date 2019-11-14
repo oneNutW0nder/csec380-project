@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% set active_page = "upload" %}
+
+{% block content %}
+    <h1>Upload a video here!</h1>
+
+    <p>Upload with a URL: <i>COMING SOON!</i></p>
+
+    <p>Upload with a file:</p>
+    <form method=post enctype="multipart/form-data">
+        <input type=file name=file>
+        <input type=submit value=Upload>
+    </form>
+{% endblock %}
