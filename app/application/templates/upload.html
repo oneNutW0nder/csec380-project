@@ -4,7 +4,12 @@
 {% block content %}
     <h1>Upload a video here!</h1>
 
-    <p>Upload with a URL: <i>COMING SOON!</i></p>
+    <p>Upload with a URL:</p>
+    <form method=post>
+        <input type=text placeholder="Filename" name=filename>
+        <input type=text placeholder="URL" name=url>
+        <input type=submit value=Download>
+    </form>
 
     <p>Upload with a file:</p>
     <form method=post enctype="multipart/form-data">
