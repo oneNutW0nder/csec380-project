@@ -5,8 +5,14 @@ that was created in __init__.py
 """
 import os
 import urllib.request
+import sqlalchemy
 
 from flask import render_template, current_app, request, redirect, make_response, flash
+from sqlalchemy import engine
+from sqlalchemy import create_engine
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy import inspect
+
 from . import loginmanager, db
 from application.models import User
 from application.models import Video
@@ -14,11 +20,15 @@ from datetime import datetime, timedelta
 from secrets import token_urlsafe
 from werkzeug.utils import secure_filename
 
+
 # Setup vars for video uploads
 EXTENSIONS = {"mp4", "flv"}
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOADS = os.path.join(BASE_DIR, "static", "uploads")
 current_app.config["UPLOAD_FOLDER"] = UPLOADS
+
+engine = create_engine('mysql+pymysql://root:root-password@database:3306/firewagon')
+con = engine.connect()
 
 
 @loginmanager.user_loader
@@ -77,9 +87,12 @@ def login():
         password = request.form["password"]
 
         # Find the user in the database
-        user = User.query.filter(User.username == username).first()
+        # user = User.query.filter(User.username == username).first()
+        use = con.execute("SELECT username FROM users WHERE username = '" + username + "'")
+        for us in use:
+            user = us
         if user:
-            if user.check_password(password):
+            if user['password'] == password:     # TD (Need to compare passwords somehow)
                 # Update their cookie and commit
                 cookie = update_session(user)
                 db.session.add(user)
