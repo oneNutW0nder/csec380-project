@@ -198,7 +198,7 @@ def download_file():
                 full_path = os.path.join(current_app.root_path, 'static', 'uploads', unique)
                 urllib.request.urlretrieve(url, filename=full_path)
             except Exception as e:
-                print(e)
+                flash("An Error has occurred:", e)
                 return redirect("/")
 
             # Add video metadata to the database
@@ -206,7 +206,8 @@ def download_file():
             db.session.add(video_obj)
             db.session.commit()
 
-            return redirect("/")
+            # Success!
+            return render_template("uploadsuccess.html")
 
     # Get request send to upload template page
     elif request.method == "GET":
