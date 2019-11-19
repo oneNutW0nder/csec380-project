@@ -1,6 +1,5 @@
 import requests
 
-@pytest.mark.last
 def test_upload():
     # Login as valid user -- True
     s = requests.session()
@@ -11,7 +10,7 @@ def test_upload():
     assert "Videos" in resp.text
 
     # Post request to /upload endpoint -- True
-    files = {"file": open("./videos/small.mp4", "rb")}
+    files = {"file": open("./tests/videos/small.mp4", "rb")}
     resp = s.post("https://localhost/upload", files=files, verify=False)
     assert "successfully" in resp.text
 
@@ -19,7 +18,6 @@ def test_upload():
     resp = s.get("https://localhost/playback/1", verify=False)
     assert "Delete Video" in resp.text
     print(resp.text)
-
 
     # Delete their video -- True
     resp = s.post("https://localhost/playback/1", verify=False)
