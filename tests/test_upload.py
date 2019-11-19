@@ -1,6 +1,6 @@
 import requests
 
-def test_upload():
+def test_fileupload():
     # Login as valid user -- True
     s = requests.session()
     resp = s.post("https://localhost/login", data={"username": "test_user", "password": "test_password"}, verify=False)
@@ -17,8 +17,29 @@ def test_upload():
     # Request to acess the video -- True
     resp = s.get("https://localhost/playback/1", verify=False)
     assert "Delete Video" in resp.text
-    print(resp.text)
 
     # Delete their video -- True
     resp = s.post("https://localhost/playback/1", verify=False)
+    assert "video has been deleted" in resp.text
+
+def test_download():
+    # Login as valid user -- True
+    s = requests.session()
+    resp = s.post("https://localhost/login", data={"username": "test_user", "password": "test_password"}, verify=False)
+
+    # Check to see if login was successful by hitting main page
+    resp = s.get("https://localhost/", verify=False)
+    assert "Videos" in resp.text
+
+    # Send post to /download endpoint
+    data = {"filename": "testDownload.mp4", "url": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"}
+    resp = s.post("https://localhost/download", data=data, verify=False)
+    assert "successfully" in resp.text
+
+    # Access the video
+    resp = s.get("https://localhost/playback/2", verify=False)
+    assert "Delete Video" in resp.text
+
+    # Delete their video -- True
+    resp = s.post("https://localhost/playback/2", verify=False)
     assert "video has been deleted" in resp.text
