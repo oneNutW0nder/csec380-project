@@ -55,7 +55,22 @@ def root():
     if request.method == "GET":
         user = auth_user_session()
         if user:
-            videos = Video.query.all()
+            # If a search string is provided
+            if request.query_string:
+                # set and get just the query
+                search_string = request.query_string
+                search_string = str(search_string).rsplit('=')[1].replace('\'', '')
+
+                # Try except to catch errors
+                try:
+                    # Search for videos
+                    videos = con.execute('SELECT * FROM video WHERE video_title like %' + search_string + '%;')
+                    videos = Video.query.filter(Video.video_title.ilike("%{}%".format(search_string)))
+                except Exception as e:
+                    rs = con.execute('ALTER TABLE video ADD FULLTEXT(video_title);')
+                    videos = Video.query.filter(Video.video_title.ilike(f"%{search_string}%")).all()
+            else:
+                videos = Video.query.all()
             return render_template("index.html", videos=videos)
         else:
             return redirect("/login")
