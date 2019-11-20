@@ -87,12 +87,13 @@ def login():
         password = request.form["password"]
 
         # Find the user in the database
-        # user = User.query.filter(User.username == username).first()
-        use = con.execute("SELECT username FROM users WHERE username = '" + username + "'")
+        user = ''
+        use = con.execute("SELECT * FROM users WHERE username = '" + username + "'")
         for us in use:
             user = us
-        if user:
-            if user['password'] == password:     # TD (Need to compare passwords somehow)
+        if user != '':
+            user = User.query.filter(User.username == username).first()
+            if user.check_password(password):     # TD (Need to compare passwords somehow)
                 # Update their cookie and commit
                 cookie = update_session(user)
                 db.session.add(user)
