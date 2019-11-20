@@ -284,7 +284,6 @@ def register():
 
         if password == confirmpassword:
             # Continue registering
-            # TODO: ADD CHECK FOR EXISTING USER
             user = User(username, password)
             db.session.add(user)
             db.session.commit()

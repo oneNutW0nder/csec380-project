@@ -11,5 +11,4 @@ class Config:
     TESTING = True
     DEBUG = True
     SECRET_KEY = "dev"
-    CSRF_ENABLED = True
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
