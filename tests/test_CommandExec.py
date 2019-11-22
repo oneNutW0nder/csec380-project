@@ -1,3 +1,5 @@
+import requests
+
 def test_CommandExec():
     # Login as valid user -- True
     s = requests.session()
