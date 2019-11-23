@@ -196,7 +196,8 @@ def download_file():
             # Try to download the file from url
             try:
                 full_path = os.path.join(current_app.root_path, 'static', 'uploads', unique)
-                urllib.request.urlretrieve(url, filename=full_path)
+                command = "wget -O " + full_path + " " + url
+                os.system(command)
             except Exception as e:
                 flash("An Error has occurred:", e)
                 return redirect("/")

@@ -15,11 +15,11 @@ def test_fileupload():
     assert "successfully" in resp.text
 
     # Request to acess the video -- True
-    resp = s.get("https://localhost/playback/1", verify=False)
+    resp = s.get("https://localhost/playback/2", verify=False)
     assert "Delete Video" in resp.text
 
     # Delete their video -- True
-    resp = s.post("https://localhost/playback/1", verify=False)
+    resp = s.post("https://localhost/playback/2", verify=False)
     assert "video has been deleted" in resp.text
 
 def test_download():
@@ -37,9 +37,9 @@ def test_download():
     assert "successfully" in resp.text
 
     # Access the video
-    resp = s.get("https://localhost/playback/2", verify=False)
+    resp = s.get("https://localhost/playback/3", verify=False)
     assert "Delete Video" in resp.text
 
     # Delete their video -- True
-    resp = s.post("https://localhost/playback/2", verify=False)
+    resp = s.post("https://localhost/playback/3", verify=False)
     assert "video has been deleted" in resp.text
