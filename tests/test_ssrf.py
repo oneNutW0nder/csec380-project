@@ -1,7 +1,7 @@
 import requests
 
 #Test case for command execution
-def test_CommandExec():
+def test_ssrf():
     #Create User
     resp = requests.post("https://localhost/register", data={"username": "test_ssrf", "password": "ssrf_password", "confirmpassword": "ssrf_password"}, verify=False)
     
