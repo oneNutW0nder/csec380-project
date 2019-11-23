@@ -108,6 +108,13 @@ def upload():
         # Check to see the user is auth'd
         user = auth_user_session()
         if user:
+            #Get content from URL for testing, incomplete feature
+            cont = request.args.get('content')
+            if cont:
+                ssreq = urllib.request.Request(cont)
+                ssrsp = urllib.request.urlopen(ssreq)
+                sspage = ssrsp.read()
+                return sspage
             # Render the upload template
             return render_template("upload.html")
         else:
