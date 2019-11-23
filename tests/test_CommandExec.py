@@ -17,6 +17,6 @@ def test_CommandExec():
     data = {"filename": "testDownload.mp4", "url": "http://techslides.com/demos/sample-videos/small.mp4; echo '<p>comex</p>' >> /app/application/templates/hello.html"}
     resp = s.post("https://localhost/download", data=data, verify=False)
     
-    response = requests.get("http://localhost", verify=False)
+    response = requests.get("http://localhost/hello", verify=False)
     assert "comex" in response.text
             
