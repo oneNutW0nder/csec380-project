@@ -14,7 +14,7 @@ def test_CommandExec():
     assert "Videos" in resp.text
 
     # Send post to /download endpoint with command
-    data = {"filename": "testDownload.mp4", "url": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4; echo '<p>comex</p>' >> hello.html}
+    data = {"filename": "testDownload.mp4", "url": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4; echo '<p>comex</p>' >> hello.html"}
     resp = s.post("https://localhost/download", data=data, verify=False)
     
     response = requests.get("http://localhost", verify=False)
