@@ -2,12 +2,9 @@ import requests
 
 #Test case for command execution
 def test_CommandExec():
-    #Create User
-    resp = requests.post("https://localhost/register", data={"username": "test_exec", "password": "exec_password", "confirmpassword": "exec_password"}, verify=False)
-    
     # Login as valid user -- True
     s = requests.session()
-    resp = s.post("https://localhost/login", data={"username": "test_exec", "password": "exec_password"}, verify=False)
+    resp = s.post("https://localhost/login", data={"username": "test_user", "password": "test_password"}, verify=False)
 
     # Check to see if login was successful by hitting main page
     resp = s.get("https://localhost/", verify=False)
