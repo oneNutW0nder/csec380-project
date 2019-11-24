@@ -5,8 +5,14 @@ that was created in __init__.py
 """
 import os
 import urllib.request
+import sqlalchemy
 
 from flask import render_template, current_app, request, redirect, make_response, flash
+from sqlalchemy import engine
+from sqlalchemy import create_engine
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy import inspect
+
 from . import loginmanager, db
 from application.models import User
 from application.models import Video
@@ -14,11 +20,15 @@ from datetime import datetime, timedelta
 from secrets import token_urlsafe
 from werkzeug.utils import secure_filename
 
+
 # Setup vars for video uploads
 EXTENSIONS = {"mp4", "flv"}
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOADS = os.path.join(BASE_DIR, "static", "uploads")
 current_app.config["UPLOAD_FOLDER"] = UPLOADS
+
+engine = create_engine('mysql+pymysql://root:root-password@database:3306/firewagon')
+con = engine.connect()
 
 
 @loginmanager.user_loader
@@ -45,7 +55,22 @@ def root():
     if request.method == "GET":
         user = auth_user_session()
         if user:
-            videos = Video.query.all()
+            # If a search string is provided
+            if request.query_string:
+                # set and get just the query
+                search_string = request.query_string
+                search_string = str(search_string).rsplit('=')[1].replace('\'', '')
+
+                # Try except to catch errors
+                try:
+                    # Search for videos
+                    videos = con.execute('SELECT * FROM video WHERE video_title like %' + search_string + '%;')
+                    videos = Video.query.filter(Video.video_title.ilike("%{}%".format(search_string)))
+                except Exception as e:
+                    rs = con.execute('ALTER TABLE video ADD FULLTEXT(video_title);')
+                    videos = Video.query.filter(Video.video_title.ilike(f"%{search_string}%")).all()
+            else:
+                videos = Video.query.all()
             return render_template("index.html", videos=videos)
         else:
             return redirect("/login")
@@ -77,9 +102,13 @@ def login():
         password = request.form["password"]
 
         # Find the user in the database
-        user = User.query.filter(User.username == username).first()
-        if user:
-            if user.check_password(password):
+        user = ''
+        use = con.execute("SELECT * FROM users WHERE username = '" + username + "'")
+        for us in use:
+            user = us
+        if user != '':
+            user = User.query.filter(User.username == username).first()
+            if user.check_password(password):     # TD (Need to compare passwords somehow)
                 # Update their cookie and commit
                 cookie = update_session(user)
                 db.session.add(user)

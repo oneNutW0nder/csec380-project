@@ -4,6 +4,11 @@
 {% block content %}
     <p>Welcome to the home page</p><br/>
 
+    <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search_string" placeholder="Search" aria-label="Search" name="search_string">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" formaction="/" formmethod="get">Search</button>
+    </form>
+
     <h2>Videos</h2>
     <table  class="table">
     {% for video in videos %}
