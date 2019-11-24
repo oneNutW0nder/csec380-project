@@ -32,7 +32,7 @@ def test_download():
     assert "Videos" in resp.text
 
     # Send post to /download endpoint
-    data = {"filename": "testDownload.mp4", "url": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"}
+    data = {"filename": "testDownload.mp4", "url": "http://techslides.com/demos/sample-videos/small.mp4"}
     resp = s.post("https://localhost/download", data=data, verify=False)
     assert "successfully" in resp.text
 
