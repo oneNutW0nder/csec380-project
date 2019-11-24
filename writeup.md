@@ -47,7 +47,9 @@
 ## Act 6
 --------------------
 1. How would you fix your code so that this issue is no longer present?
+    > I would fix the code by removing the functionality that was being set in place to allow previewing a video from a URL as a result of a GET request on the upload endpoint using the content parameter. This resulted in not only videos being previewed, but any sort of request sent to it, either external or internal.
 2. How does your test demonstrate SSRF as opposed to just accessing any old endpoint.
+    > The test I've performed for testing out the SSRF vulnerability makes and attempt to reach both a remote asset webpage with an HTTP request, as well as reaching internal assets by using the file:// URI for the request.
 
 ## Act 7
 --------------------
