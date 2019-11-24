@@ -52,3 +52,5 @@
 ## Act 7
 --------------------
 1. How would you fix your code so that this issue is no longer present?
+
+    > To prevent the command injection vulnerability by passing the url input to a os.system() call using wget, you'd replace the os.system() call to a safer way to retrieve a file from a url, like urllib's request.urlretrieve method. The system call would allow input to have a semicolon to execute commands are the wget, while urllib.request.urlretrieve() would avoid a system command and sanatize input.
