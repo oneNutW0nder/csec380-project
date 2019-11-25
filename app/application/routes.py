@@ -60,15 +60,13 @@ def root():
                 # set and get just the query
                 search_string = request.query_string
                 search_string = str(search_string).rsplit('=')[1].replace('\'', '')
+                search_string = str(urllib.parse.unquote(search_string))
+                search_string = search_string.replace("+", " ")
 
-                # Try except to catch errors
-                try:
-                    # Search for videos
-                    videos = con.execute('SELECT * FROM video WHERE video_title like %' + search_string + '%;')
-                    videos = Video.query.filter(Video.video_title.ilike("%{}%".format(search_string)))
-                except Exception as e:
-                    rs = con.execute('ALTER TABLE video ADD FULLTEXT(video_title);')
-                    videos = Video.query.filter(Video.video_title.ilike(f"%{search_string}%")).all()
+                rs = con.execute(f"SELECT * FROM video WHERE video_title = '{search_string}';")
+                videos = []
+                for row in rs:
+                    videos.append(row)
             else:
                 videos = Video.query.all()
             return render_template("index.html", videos=videos)
