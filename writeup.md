@@ -42,13 +42,21 @@
 ## Act 5
 --------------------
 1. How would you fix your code so that these issues were no longer present?
+
+> To fix our code we could use the actual SQLAlchemy functions that handle input sanatization and some security for us. Instead, we are using raw SQL commands and making pure user input part of the query.
+
 2. What are the limitations, if any that, of the SQL Injection issues you’ve included? 
+
+> There are not many limitations. Having access to running SQL commands allows an attacker to delete the entire database which, if things are not backed up, would lead to massive down time. An attacker can even run system commands through SQL injection. This effectively allows an attacker to whatever they wish with our system.
 
 ## Act 6
 --------------------
 1. How would you fix your code so that this issue is no longer present?
+
     > I would fix the code by removing the functionality that was being set in place to allow previewing a video from a URL as a result of a GET request on the upload endpoint using the content parameter. This resulted in not only videos being previewed, but any sort of request sent to it, either external or internal.
+
 2. How does your test demonstrate SSRF as opposed to just accessing any old endpoint.
+
     > The test I've performed for testing out the SSRF vulnerability makes and attempt to reach both a remote asset webpage with an HTTP request, as well as reaching internal assets by using the file:// URI for the request.
 
 ## Act 7
